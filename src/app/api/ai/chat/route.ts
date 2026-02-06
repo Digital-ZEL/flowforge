@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateChatInput } from '@/lib/validation';
 
 export const maxDuration = 60;
 
@@ -10,6 +11,11 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
     }
+    const errors = validateChatInput(body ?? {});
+    if (errors.length > 0) {
+      return NextResponse.json({ error: errors[0].message, errors }, { status: 400 });
+    }
+
     const { message, analysisContext, chatHistory } = body;
 
     if (!message?.trim()) {

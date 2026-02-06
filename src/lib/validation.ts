@@ -48,17 +48,29 @@ export function validateAnalyzeInput(body: Partial<AnalyzeInput>): ValidationErr
     }
   }
 
-  // desiredOutcome — make optional since goals might replace it
-  if (body.desiredOutcome && typeof body.desiredOutcome === 'string') {
-    const len = body.desiredOutcome.trim().length;
+  // desiredOutcome
+  const desiredOutcomeValue = typeof body.desiredOutcome === 'string' ? body.desiredOutcome.trim() : '';
+  const hasGoals = Array.isArray(body.goals) && body.goals.some(goal => typeof goal === 'string' && goal.trim().length > 0);
+  if (!desiredOutcomeValue && !hasGoals) {
+    errors.push({ field: 'desiredOutcome', message: 'Desired outcome is required.' });
+  } else if (desiredOutcomeValue) {
+    const len = desiredOutcomeValue.length;
+    if (len < 10) {
+      errors.push({ field: 'desiredOutcome', message: `Desired outcome must be at least 10 characters (got ${len}).` });
+    }
     if (len > 5000) {
       errors.push({ field: 'desiredOutcome', message: `Desired outcome must be at most 5,000 characters (got ${len}).` });
     }
   }
 
-  // industry — accept any non-empty string
+  // industry
   if (!body.industry || typeof body.industry !== 'string' || body.industry.trim().length === 0) {
     errors.push({ field: 'industry', message: 'Industry is required.' });
+  } else if (!ALLOWED_INDUSTRIES.includes(body.industry as AllowedIndustry)) {
+    errors.push({
+      field: 'industry',
+      message: `Industry must be one of: ${ALLOWED_INDUSTRIES.join(', ')}.`,
+    });
   }
 
   return errors;
