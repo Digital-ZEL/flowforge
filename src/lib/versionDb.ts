@@ -187,14 +187,25 @@ export async function deleteProcess(id: string): Promise<void> {
 }
 
 export async function searchProcesses(query: string): Promise<AnalysisResult[]> {
-  const all = await getAllProcesses();
-  const q = query.toLowerCase();
-  return all.filter(
-    (p: AnalysisResult) =>
-      p.title.toLowerCase().includes(q) ||
-      p.currentProcess.toLowerCase().includes(q) ||
-      p.industry.toLowerCase().includes(q)
-  );
+  try {
+    const all = await getAllProcesses();
+    const q = query.toLowerCase();
+    return all.filter(
+      (p: AnalysisResult) =>
+        p.title.toLowerCase().includes(q) ||
+        p.currentProcess.toLowerCase().includes(q) ||
+        p.industry.toLowerCase().includes(q)
+    );
+  } catch {
+    const all = Array.from(memStore[PROCESS_STORE].values()) as AnalysisResult[];
+    const q = query.toLowerCase();
+    return all.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.currentProcess.toLowerCase().includes(q) ||
+        p.industry.toLowerCase().includes(q)
+    );
+  }
 }
 
 // ---- Version History ----
@@ -318,8 +329,13 @@ export async function getFeedback(processId: string): Promise<FeedbackComment[]>
 }
 
 export async function getFeedbackCount(processId: string): Promise<number> {
-  const fb = await getFeedback(processId);
-  return fb.length;
+  try {
+    const fb = await getFeedback(processId);
+    return fb.length;
+  } catch {
+    const fb = Array.from(memStore[FEEDBACK_STORE].values()) as FeedbackComment[];
+    return fb.filter((f) => f.processId === processId).length;
+  }
 }
 
 export async function updateLastViewed(processId: string): Promise<void> {
