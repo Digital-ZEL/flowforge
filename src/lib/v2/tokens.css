@@ -1,0 +1,66 @@
+/* V2 Design Tokens */
+:root {
+  /* Primary palette */
+  --v2-primary: #6366f1;
+  --v2-primary-hover: #4f46e5;
+  --v2-primary-light: #818cf8;
+  --v2-primary-muted: rgba(99, 102, 241, 0.12);
+
+  /* Surfaces */
+  --v2-bg: #0f0f14;
+  --v2-bg-elevated: #16161e;
+  --v2-bg-card: #1c1c27;
+  --v2-bg-card-hover: #22222e;
+  --v2-bg-input: #1c1c27;
+
+  /* Borders */
+  --v2-border: rgba(255, 255, 255, 0.08);
+  --v2-border-hover: rgba(255, 255, 255, 0.14);
+  --v2-border-active: rgba(99, 102, 241, 0.5);
+
+  /* Text */
+  --v2-text: #f0f0f5;
+  --v2-text-secondary: #9494a8;
+  --v2-text-muted: #5c5c72;
+  --v2-text-inverse: #0f0f14;
+
+  /* Status */
+  --v2-success: #10b981;
+  --v2-success-muted: rgba(16, 185, 129, 0.12);
+  --v2-warning: #f59e0b;
+  --v2-warning-muted: rgba(245, 158, 11, 0.12);
+  --v2-danger: #ef4444;
+  --v2-danger-muted: rgba(239, 68, 68, 0.12);
+  --v2-info: #3b82f6;
+  --v2-info-muted: rgba(59, 130, 246, 0.12);
+
+  /* Spacing scale */
+  --v2-space-xs: 4px;
+  --v2-space-sm: 8px;
+  --v2-space-md: 16px;
+  --v2-space-lg: 24px;
+  --v2-space-xl: 32px;
+  --v2-space-2xl: 48px;
+
+  /* Radii */
+  --v2-radius-sm: 6px;
+  --v2-radius-md: 10px;
+  --v2-radius-lg: 14px;
+  --v2-radius-xl: 20px;
+  --v2-radius-full: 9999px;
+
+  /* Shadows */
+  --v2-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --v2-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --v2-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --v2-shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+
+  /* Transitions */
+  --v2-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --v2-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --v2-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Sidebar */
+  --v2-sidebar-width: 260px;
+  --v2-sidebar-collapsed: 72px;
+}
