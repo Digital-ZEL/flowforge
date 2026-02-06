@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateAnalyzeInput } from '@/lib/validation';
 
 // Serverless with extended timeout (Vercel allows up to 60s on Hobby with Fluid Compute)
 export const maxDuration = 60;
@@ -15,6 +16,11 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
     }
+    const errors = validateAnalyzeInput(body);
+    if (errors.length > 0) {
+      return NextResponse.json({ error: errors[0].message, errors }, { status: 400 });
+    }
+
     const { currentProcess, industry } = body;
     const desiredOutcome = body.desiredOutcome || (body.goals ? (Array.isArray(body.goals) ? body.goals.join(', ') : body.goals) : 'Optimize');
 
