@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, use } from 'react';
 import dynamic from 'next/dynamic';
 import { useProcess } from '@/hooks/useProcess';
 import { updateLastViewed } from '@/lib/versionDb';
@@ -23,8 +23,8 @@ const ApprovalWorkflow = dynamic(() => import('@/components/ApprovalWorkflow'), 
 type ViewMode = 'flowchart' | 'swimlane';
 type RightTab = 'map' | 'roi' | 'history' | 'audit';
 
-export default function ProcessPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProcessPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { process: initialProcess, loading, error } = useProcess(id);
   const [process, setProcess] = useState<AnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState(0);
@@ -81,6 +81,31 @@ export default function ProcessPage({ params }: { params: { id: string } }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (!process) return;
+    let cancelled = false;
+    import('@/lib/layout').then(({ getLayoutedElements }) => {
+      if (cancelled) return;
+      if (activeTab === 0) {
+        setLayoutedData(getLayoutedElements(process.currentState.steps, process.currentState.bottlenecks));
+        setLayoutSteps(process.currentState.steps);
+        setLayoutBottlenecks(process.currentState.bottlenecks);
+      } else {
+        const option = process.options[activeTab - 1];
+        if (option) {
+          setLayoutedData(getLayoutedElements(option.steps));
+          setLayoutSteps(option.steps);
+          setLayoutBottlenecks([]);
+        } else {
+          setLayoutedData({ nodes: [], edges: [] });
+          setLayoutSteps([]);
+          setLayoutBottlenecks([]);
+        }
+      }
+    });
+    return () => { cancelled = true; };
+  }, [process, activeTab]);
+
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-56px)] bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
@@ -112,31 +137,6 @@ export default function ProcessPage({ params }: { params: { id: string } }) {
       </div>
     );
   }
-
-  useEffect(() => {
-    if (!process) return;
-    let cancelled = false;
-    import('@/lib/layout').then(({ getLayoutedElements }) => {
-      if (cancelled) return;
-      if (activeTab === 0) {
-        setLayoutedData(getLayoutedElements(process.currentState.steps, process.currentState.bottlenecks));
-        setLayoutSteps(process.currentState.steps);
-        setLayoutBottlenecks(process.currentState.bottlenecks);
-      } else {
-        const option = process.options[activeTab - 1];
-        if (option) {
-          setLayoutedData(getLayoutedElements(option.steps));
-          setLayoutSteps(option.steps);
-          setLayoutBottlenecks([]);
-        } else {
-          setLayoutedData({ nodes: [], edges: [] });
-          setLayoutSteps([]);
-          setLayoutBottlenecks([]);
-        }
-      }
-    });
-    return () => { cancelled = true; };
-  }, [process, activeTab]);
 
   const layouted = layoutedData;
   const steps = layoutSteps;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import dynamic from 'next/dynamic';
 import { useProcess } from '@/hooks/useProcess';
 import { getLayoutedElements } from '@/lib/layout';
@@ -12,8 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 const FlowMap = dynamic(() => import('@/components/FlowMap'), { ssr: false });
 
-export default function CollaboratePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function CollaboratePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { process, loading, error } = useProcess(id);
   const [activeTab, setActiveTab] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);

@@ -1,8 +1,13 @@
 const http = require('http');
 const https = require('https');
 
-const PORT = 3456;
-const MOONSHOT_KEY = process.env.MOONSHOT_API_KEY || 'sk-B0xcJmmL3TMTdG6zUNvJOmprj2QiswOEGi3XZFzVhoJpPmhc';
+const PORT = Number(process.env.PORT || 3456);
+const MOONSHOT_KEY = process.env.MOONSHOT_API_KEY;
+
+if (!MOONSHOT_KEY) {
+  console.error('MOONSHOT_API_KEY is required. Refusing to start without it.');
+  process.exit(1);
+}
 
 const SYSTEM_PROMPT = `You are an expert business process analyst. Return ONLY valid JSON (no markdown, no code fences) with this structure:
 {
@@ -126,6 +131,6 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`FlowForge AI Proxy running on port ${PORT}`);
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`FlowForge AI Proxy running on 127.0.0.1:${PORT}`);
 });

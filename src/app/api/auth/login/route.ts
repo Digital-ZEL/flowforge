@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { AUTH, createSessionToken } from '@/lib/auth';
+import { RATE_LIMITS, checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +12,15 @@ export async function POST(request: NextRequest) {
         { error: 'Password is required' },
         { status: 400 }
       );
+    }
+
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`${ip}:auth-login`, {
+      maxRequests: 10,
+      windowMs: RATE_LIMITS.analyze.windowMs,
+    });
+    if (!rate.success) {
+      return NextResponse.json({ error: 'Too many login attempts. Try again later.' }, { status: 429 });
     }
 
     const accessPassword = process.env.ACCESS_PASSWORD;
@@ -28,13 +39,11 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json({ success: true });
-    
-    // Set httpOnly cookie with 7 day expiry
-    response.cookies.set('ff_session', 'authenticated', {
+    response.cookies.set(AUTH.SESSION_COOKIE, await createSessionToken(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: AUTH.SESSION_TTL_SECONDS,
       path: '/',
     });
 

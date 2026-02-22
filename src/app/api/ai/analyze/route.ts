@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateAnalyzeInput } from '@/lib/validation';
+import { RATE_LIMITS, checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 // Serverless with extended timeout (Vercel allows up to 60s on Hobby with Fluid Compute)
 export const maxDuration = 60;
@@ -98,6 +99,12 @@ export async function POST(request: NextRequest) {
     const errors = validateAnalyzeInput(body);
     if (errors.length > 0) {
       return NextResponse.json({ error: errors[0].message, errors }, { status: 400 });
+    }
+
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`${ip}:api-analyze`, RATE_LIMITS.analyze);
+    if (!rate.success) {
+      return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 });
     }
 
     const { currentProcess, industry } = body;

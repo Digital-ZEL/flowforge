@@ -14,7 +14,7 @@ export default function TemplatesPage() {
     ? templates.filter((t) => t.tags.includes(selectedTag))
     : templates;
 
-  const useTemplate = (template: ProcessTemplate) => {
+  const applyTemplate = (template: ProcessTemplate) => {
     const params = new URLSearchParams({
       template: template.id,
       currentProcess: template.currentProcess,
@@ -98,7 +98,7 @@ export default function TemplatesPage() {
                   ))}
                 </div>
                 <button
-                  onClick={() => useTemplate(template)}
+                  onClick={() => applyTemplate(template)}
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors shadow-sm"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -88,8 +88,8 @@ export function validateChatInput(body: { message?: string; analysisContext?: un
     errors.push({ field: 'message', message: 'Message must be at most 2,000 characters.' });
   }
 
-  if (!body.analysisContext || typeof body.analysisContext !== 'object') {
-    errors.push({ field: 'analysisContext', message: 'Analysis context is required.' });
+  if (body.analysisContext != null && typeof body.analysisContext !== 'object') {
+    errors.push({ field: 'analysisContext', message: 'Analysis context must be an object when provided.' });
   }
 
   return errors;

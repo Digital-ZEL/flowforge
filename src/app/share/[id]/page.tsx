@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import dynamic from 'next/dynamic';
 import { useProcess } from '@/hooks/useProcess';
 import { getLayoutedElements } from '@/lib/layout';
@@ -8,8 +8,8 @@ import ComparisonTable from '@/components/ComparisonTable';
 
 const FlowMap = dynamic(() => import('@/components/FlowMap'), { ssr: false });
 
-export default function SharePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function SharePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { process, loading, error } = useProcess(id);
   const [activeTab, setActiveTab] = useState(0);
 

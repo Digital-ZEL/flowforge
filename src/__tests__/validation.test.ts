@@ -95,8 +95,13 @@ describe('validateChatInput', () => {
     expect(errors.some(e => e.field === 'message')).toBe(true);
   });
 
-  it('requires analysisContext', () => {
+  it('allows missing analysisContext', () => {
     const errors = validateChatInput({ message: 'Hello' });
+    expect(errors.some(e => e.field === 'analysisContext')).toBe(false);
+  });
+
+  it('rejects non-object analysisContext when provided', () => {
+    const errors = validateChatInput({ message: 'Hello', analysisContext: 'bad' as unknown as object });
     expect(errors.some(e => e.field === 'analysisContext')).toBe(true);
   });
 });

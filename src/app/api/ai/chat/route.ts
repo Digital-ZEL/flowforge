@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateChatInput } from '@/lib/validation';
+import { RATE_LIMITS, checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export const maxDuration = 60;
 
@@ -17,6 +18,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { message, analysisContext, chatHistory } = body;
+
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`${ip}:api-chat`, RATE_LIMITS.chat);
+    if (!rate.success) {
+      return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 });
+    }
 
     if (!message?.trim()) {
       return NextResponse.json({ error: 'Message required' }, { status: 400 });

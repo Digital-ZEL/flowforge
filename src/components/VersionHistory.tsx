@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { AnalysisResult } from '@/lib/types';
 import {
   getVersions,
@@ -19,16 +19,16 @@ export default function VersionHistory({ process, onRestore }: VersionHistoryPro
   const [loading, setLoading] = useState(true);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadVersions();
-  }, [process.id]);
-
-  const loadVersions = async () => {
+  const loadVersions = useCallback(async () => {
     setLoading(true);
     const v = await getVersions(process.id);
     setVersions(v);
     setLoading(false);
-  };
+  }, [process.id]);
+
+  useEffect(() => {
+    loadVersions();
+  }, [loadVersions]);
 
   const restoreVersion = async (version: ProcessVersion) => {
     // Save current state as a version before restoring
