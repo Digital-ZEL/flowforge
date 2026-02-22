@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, use } from 'react';
 import dynamic from 'next/dynamic';
 import { useProcess } from '@/hooks/useProcess';
 import { updateLastViewed } from '@/lib/versionDb';
@@ -25,8 +25,8 @@ const TABS: { key: TabKey; label: string; icon: string }[] = [
   { key: 'audit', label: 'Audit', icon: '📋' },
 ];
 
-export default function V2ProcessPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function V2ProcessPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { process: initialProcess, loading, error } = useProcess(id);
   const [process, setProcess] = useState<AnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>('flow');
